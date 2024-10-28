@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotería Neón</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
+
+
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            background-image: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+        }
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+        .tab {
+            color: #00ffff;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00ffff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .tab:hover {
+            background: rgba(0, 255, 255, 0.2);
+            text-shadow: 0 0 10px #00ffff;
+        }
+        .logo {
+            max-width: 100px;
+            margin: 10px;
+        }
+        .title-container, .subtitle-container {
+            flex: 1;
+        }
+        h1 {
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+        }
+        .number {
+            font-size: 1.5rem;
+            margin: 5px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            transition: transform 0.2s, opacity 0.2s;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+        }
+        .btn-custom {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #ff4081;
+            border: none;
+            color: #fff;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #e91e63;
+        }
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #00ffff;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: rgba(0, 255, 255, 0.2);
+        }
+        .modal-header {
+            background-color: #000;
+            color: #00ff00;
+        }
+        .modal-title {
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        .modal-body {
+            background-color: #1a1a1a;
+            padding: 20px;
+        }
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            color: #fff;
+        }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: #00ff00;
+            box-shadow: none;
+        }
+        .circle-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            margin: 0 auto;
+            font-size: 1.2rem;
+        }
+        .tab.active {
+    background: rgba(0, 255, 255, 0.3); /* Color de fondo para la pestaña activa */
+    text-shadow: 0 0 10px #00ffff; /* Efecto de texto */
+}
+table {
+    width: 100%;
+    margin-top: 20px;
+}
+
+
+@media (max-width: 768px) {
+    .number {
+        font-size: 1rem; /* Ajustar tamaño de fuente para pantallas pequeñas */
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title-container">
+                <h3 class="mb-0">🎯LOTERÍA:<mark>BOGOTA</mark></h3>
+                <h5>💰VALOR:<b>$2,000</b></h5>
+                <h5>💵PREMIO:<b>$150,000</b></h5>
+            </div>
+            <img src="imagen/logo.png" alt="Logo" class="logo">
+            <div class="subtitle-container">
+                <div class="tabs">
+                    <div class="tab" onclick="showSection('main')">🔖Página Principal</div>
+                    <div class="tab" onclick="showSection('available')">🔖Números Disponibles</div>
+                    <div class="tab" onclick="showSection('paid')">🔖Pagados</div>
+                    <div class="tab" onclick="showSection('pending')">🔖Pendientes de Pago</div>
+                    <div class="tab" onclick="showSection('client-list')">🔖Lista de Clientes</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="main" class="section">
+            <h1 class="mb-4 text-center">💲LOTTO MILLONARIO💲</h1>
+            <p class="text-center">Haz clic en un número para seleccionarlo</p>
+            <div id="number-list" class="d-flex flex-wrap justify-content-center"></div>
+            <button id="reset-button" class="btn btn-custom mt-4">Reiniciar Todo</button>
+            <h2 class="mt-4">📄Datos del Cliente</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>🎱Número</th>
+                        <th>👥Nombre</th>
+                        <th>📱Celular</th>
+                        <th>🚦Estado</th>
+                        <th>🦾Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="client-data"></tbody>
+            </table>
+        </div>
+
+        <div id="available" class="section" style="display: none;">
+            <h1 class="mb-4 text-center">Números Disponibles</h1>
+            <button id="download-button" class="btn btn-custom mb-3">Descargar como Imagen</button>
+            <div id="number-list-available" class="d-flex flex-wrap justify-content-center"></div>
+        </div>
+        
+        
+
+        <div id="paid" class="section" style="display: none;">
+            <h1 class="mb-4 text-center">Clientes Pagados</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Nombre</th>
+                        <th>Celular</th>
+                    </tr>
+                </thead>
+                <tbody id="paid-data"></tbody>
+            </table>
+        </div>
+
+        <div id="pending" class="section" style="display: none;">
+            <h1 class="mb-4 text-center">Clientes Pendientes de Pago</h1>
+            <table>
+                
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Nombre</th>
+                        <th>Celular</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="pending-data"></tbody>
+            </table>
+        </div>
+
+        <div id="client-list" class="section" style="display: none;">
+            <h1 class="mb-4 text-center">Lista de Clientes</h1>
+            <button id="export-button" class="btn btn-custom mb-3">Exportar a Excel</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Nombre</th>
+                        <th>Celular</th>
+                    </tr>
+                </thead>
+                <tbody id="client-list-data"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para ingresar datos del cliente -->
+    <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assignModalLabel">Asignar Número</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="assign-number" class="mb-3 circle-number" style="font-size: 1.5rem; text-align: center;"></div>
+                    <input type="text" id="client-name" placeholder="Nombre del Cliente" class="form-control mb-2" required>
+                    <input type="tel" id="client-phone" placeholder="Celular del Cliente (Ej: 123 4567)" class="form-control mb-2" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button id="assign-button" class="btn btn-custom">Asignar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+    const numberList = document.getElementById('number-list');
+    const numberListAvailable = document.getElementById('number-list-available');
+    const paidData = document.getElementById('paid-data');
+    const pendingData = document.getElementById('pending-data');
+    const clientListData = document.getElementById('client-list-data');
+
+    // Generar números del 00 al 99
+    for (let i = 0; i < 100; i++) {
+        const numberItem = document.createElement('div');
+        numberItem.className = 'number';
+        numberItem.innerText = String(i).padStart(2, '0');
+        numberItem.onclick = () => {
+            document.getElementById('assign-number').innerText = numberItem.innerText;
+            $('#assignModal').modal('show');
+        };
+        numberList.appendChild(numberItem);
+        numberListAvailable.appendChild(numberItem.cloneNode(true));
+    }
+
+    // Asignar número al cliente
+    document.getElementById('assign-button').onclick = () => {
+        const name = document.getElementById('client-name').value;
+        const phone = document.getElementById('client-phone').value;
+        const number = document.getElementById('assign-number').innerText;
+
+        if (name && phone) {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = 
+                `<td><div class="circle-number">${number}</div></td>
+                 <td style="font-weight: bold;">${name.toUpperCase()}</td>
+                 <td style="font-weight: bold;">${phone}</td>
+                 <td>Pendiente</td>
+                 <td>
+                     <button class="btn btn-success btn-sm" onclick="markPaid('${number}', '${name}', '${phone}')">Pagó</button>
+                     <button class="btn btn-warning btn-sm" onclick="markPending('${number}', '${name}', '${phone}')">Debe</button>
+                 </td>`;
+            document.getElementById('client-data').appendChild(newRow);
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-phone').value = '';
+            $('#assignModal').modal('hide');
+            updateAvailableNumbers(number);
+        }
+    };
+
+    // Marcar como Pagado
+    function markPaid(number, name, phone) {
+        const paidRow = document.createElement('tr');
+        paidRow.innerHTML = 
+            `<td><div class="circle-number">${number}</div></td>
+             <td style="font-weight: bold;">${name}</td>
+             <td style="font-weight: bold;">${phone}</td>`;
+        paidData.appendChild(paidRow);
+        clientListData.appendChild(paidRow.cloneNode(true));
+        removeClientRow(number);
+    }
+
+    // Marcar como Pendiente
+    function markPending(number, name, phone) {
+        const pendingRow = document.createElement('tr');
+        pendingRow.innerHTML = 
+            `<td><div class="circle-number">${number}</div></td>
+             <td style="font-weight: bold;">${name}</td>
+             <td style="font-weight: bold;">${phone}</td>
+             <td>
+                 <button class="btn btn-success btn-sm" onclick="markPaidFromPending('${number}', '${name}', '${phone}')">Pagó</button>
+                 <button class="btn btn-danger btn-sm" onclick="release('${number}')">Liberar</button>
+             </td>`;
+        pendingData.appendChild(pendingRow);
+        removeClientRow(number);
+    }
+
+   // Liberar número
+function release(number) {
+    // Eliminar fila de pendientes
+    const rows = document.querySelectorAll('#pending-data tr');
+    rows.forEach(row => {
+        const cell = row.querySelector('.circle-number');
+        if (cell && cell.innerText === number) {
+            row.remove(); // Remover la fila de pendiente
+            alert(`Número ${number} liberado y disponible nuevamente.`);
+            restoreAvailableNumber(number); // Restaurar el número a la lista de disponibles
+        }
+    });
+}
+
+// Restaurar número a la lista de disponibles y a la página principal
+function restoreAvailableNumber(number) {
+    // Restaurar el número en la sección de números disponibles
+    const numberItem = document.createElement('div');
+    numberItem.className = 'number';
+    numberItem.innerText = number;
+    numberItem.onclick = () => {
+        document.getElementById('assign-number').innerText = numberItem.innerText;
+        $('#assignModal').modal('show');
+    };
+
+    // Agregar el número a la sección de disponibles en la posición correcta
+    const availableNumbers = document.querySelectorAll('#number-list-available .number');
+    for (let i = 0; i < availableNumbers.length; i++) {
+        if (availableNumbers[i].innerText === '') {
+            availableNumbers[i].innerText = number; // Reemplazar el número vacío
+            availableNumbers[i].style.opacity = '1'; // Hacerlo visible
+            break; // Salir una vez que se ha colocado
+        }
+    }
+
+    // Restaurar el número en la lista principal en la posición correcta
+    const mainNumbers = document.querySelectorAll('#number-list .number');
+    for (let i = 0; i < mainNumbers.length; i++) {
+        if (mainNumbers[i].innerText === '') {
+            mainNumbers[i].innerText = number; // Reemplazar el número vacío
+            mainNumbers[i].style.opacity = '1'; // Hacerlo visible
+            break; // Salir una vez que se ha colocado
+        }
+    }
+}
+
+
+    // Restaurar número a la lista de disponibles
+    function restoreAvailableNumber(number) {
+        // Restaurar el número en la sección de números disponibles
+        const numberItem = document.createElement('div');
+        numberItem.className = 'number';
+        numberItem.innerText = number;
+        numberItem.onclick = () => {
+            document.getElementById('assign-number').innerText = numberItem.innerText;
+            $('#assignModal').modal('show');
+        };
+
+        // Agregar el número a la sección de disponibles
+        const existingNumber = Array.from(numberListAvailable.children).find(item => item.innerText === '');
+        if (existingNumber) {
+            existingNumber.innerText = number; // Reemplazar el número vacío
+            existingNumber.style.opacity = '1'; // Hacerlo visible
+        } else {
+            numberListAvailable.appendChild(numberItem.cloneNode(true));
+        }
+
+        // Restaurar el número en la lista principal
+        const existingMainNumber = Array.from(numberList.children).find(item => item.innerText === '');
+        if (existingMainNumber) {
+            existingMainNumber.innerText = number; // Reemplazar el número vacío
+            existingMainNumber.style.opacity = '1'; // Hacerlo visible
+        } else {
+            numberList.appendChild(numberItem); // Agregar al final si no hay espacio vacío
+        }
+    }
+
+    // Remover fila del cliente de la tabla principal
+    function removeClientRow(number) {
+        const rows = document.querySelectorAll('#client-data tr');
+        rows.forEach(row => {
+            const cell = row.querySelector('.circle-number');
+            if (cell && cell.innerText === number) {
+                row.remove();
+            }
+        });
+    }
+
+    // Actualizar números disponibles
+    function updateAvailableNumbers(number) {
+        const availableNumbers = document.querySelectorAll('.number');
+        availableNumbers.forEach(num => {
+            if (num.innerText === number) {
+                num.innerText = ''; // Dejar espacio vacío
+                num.style.opacity = '0'; // Hacer el número invisible
+            }
+        });
+    }
+
+    // Mostrar sección correspondiente
+    function showSection(section) {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(sec => {
+            sec.style.display = 'none'; // Ocultar todas las secciones
+        });
+        document.getElementById(section).style.display = 'block'; // Mostrar la sección seleccionada
+    }
+
+    // Botón de reinicio
+    document.getElementById('reset-button').onclick = () => {
+        const numbers = document.querySelectorAll('.number');
+        numbers.forEach(num => {
+            num.style.opacity = '1'; // Restaurar opacidad
+            num.innerText = String(num.innerText).padStart(2, '0'); // Restaurar número
+        });
+        document.getElementById('client-data').innerHTML = ''; // Limpiar datos del cliente
+        paidData.innerHTML = ''; // Limpiar datos pagados
+        pendingData.innerHTML = ''; // Limpiar datos pendientes
+        alert('Todo ha sido reiniciado.');
+    };
+
+    // Función para exportar datos a Excel
+document.getElementById('export-button').onclick = () => {
+    const table = document.getElementById('client-list-data');
+    const data = [];
+
+    // Recorrer las filas de la tabla para obtener los datos
+    for (let row of table.rows) {
+        const rowData = [];
+        for (let cell of row.cells) {
+            rowData.push(cell.innerText); // Agregar el texto de cada celda
+        }
+        data.push(rowData); // Agregar la fila al array de datos
+    }
+
+    // Crear un libro de trabajo y una hoja
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    // Agregar la hoja al libro de trabajo
+    XLSX.utils.book_append_sheet(wb, ws, "Clientes");
+
+    // Generar el archivo Excel y descargarlo
+    XLSX.writeFile(wb, "Lista_de_Clientes.xlsx");
+};
+function showSection(section) {
+    const sections = document.querySelectorAll('.section');
+    const tabs = document.querySelectorAll('.tab');
+    
+    // Ocultar todas las secciones
+    sections.forEach(sec => {
+        sec.style.display = 'none';
+    });
+    
+    // Mostrar la sección seleccionada
+    document.getElementById(section).style.display = 'block';
+
+    // Resaltar la pestaña activa
+    tabs.forEach(tab => {
+        tab.classList.remove('active'); // Eliminar la clase activa de todas las pestañas
+    });
+    // Añadir la clase activa a la pestaña correspondiente
+    const activeTab = Array.from(tabs).find(tab => tab.onclick.toString().includes(section));
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+}
+
+function saveData() {
+    const clientData = Array.from(document.querySelectorAll('#client-data tr')).map(row => ({
+        number: row.querySelector('.circle-number').innerText,
+        name: row.children[1].innerText,
+        phone: row.children[2].innerText,
+    }));
+    localStorage.setItem('clientData', JSON.stringify(clientData));
+
+    const paidData = Array.from(document.querySelectorAll('#paid-data tr')).map(row => ({
+        number: row.querySelector('.circle-number').innerText,
+        name: row.children[1].innerText,
+        phone: row.children[2].innerText,
+    }));
+    localStorage.setItem('paidData', JSON.stringify(paidData));
+
+    const pendingData = Array.from(document.querySelectorAll('#pending-data tr')).map(row => ({
+        number: row.querySelector('.circle-number').innerText,
+        name: row.children[1].innerText,
+        phone: row.children[2].innerText,
+    }));
+    localStorage.setItem('pendingData', JSON.stringify(pendingData));
+}
+
+function loadData() {
+    const clientData = JSON.parse(localStorage.getItem('clientData')) || [];
+    const paidData = JSON.parse(localStorage.getItem('paidData')) || [];
+    const pendingData = JSON.parse(localStorage.getItem('pendingData')) || [];
+
+    clientData.forEach(data => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td><div class="circle-number">${data.number}</div></td>
+            <td style="font-weight: bold;">${data.name}</td>
+            <td style="font-weight: bold;">${data.phone}</td>
+            <td>Pendiente</td>
+            <td>
+                <button class="btn btn-success btn-sm" onclick="markPaid('${data.number}', '${data.name}', '${data.phone}')">Pagó</button>
+                <button class="btn btn-warning btn-sm" onclick="markPending('${data.number}', '${data.name}', '${data.phone}')">Debe</button>
+            </td>
+        `;
+        document.getElementById('client-data').appendChild(newRow);
+    });
+
+    paidData.forEach(data => {
+        const paidRow = document.createElement('tr');
+        paidRow.innerHTML = `
+            <td><div class="circle-number">${data.number}</div></td>
+            <td style="font-weight: bold;">${data.name}</td>
+            <td style="font-weight: bold;">${data.phone}</td>
+        `;
+        paidData.appendChild(paidRow);
+    });
+
+    pendingData.forEach(data => {
+        const pendingRow = document.createElement('tr');
+        pendingRow.innerHTML = `
+            <td><div class="circle-number">${data.number}</div></td>
+            <td style="font-weight: bold;">${data.name}</td>
+            <td style="font-weight: bold;">${data.phone}</td>
+            <td>
+                <button class="btn btn-success btn-sm" onclick="markPaid('${data.number}', '${data.name}', '${data.phone}')">Pagó</button>
+                <button class="btn btn-danger btn-sm" onclick="release('${data.number}')">Liberar</button>
+            </td>
+        `;
+        pendingData.appendChild(pendingRow);
+    });
+}
+window.onload = () => {
+    loadData();
+};
+
+document.getElementById('reset-button').onclick = () => {
+    localStorage.removeItem('clientData');
+    localStorage.removeItem('paidData');
+    localStorage.removeItem('pendingData');
+    
+    const numbers = document.querySelectorAll('.number');
+    numbers.forEach(num => {
+        num.style.opacity = '1';
+        num.innerText = String(num.innerText).padStart(2, '0');
+    });
+    document.getElementById('client-data').innerHTML = '';
+    paidData.innerHTML = '';
+    pendingData.innerHTML = '';
+    alert('Todo ha sido reiniciado.');
+};
+
+// Modifica la función de marcar como Pagado desde Pendientes
+function markPaidFromPending(number, name, phone) {
+    // Crear una fila para la sección Pagados
+    const paidRow = document.createElement('tr');
+    paidRow.innerHTML = 
+        `<td><div class="circle-number">${number}</div></td>
+        <td style="font-weight: bold;">${name}</td>
+        <td style="font-weight: bold;">${phone}</td>`;
+    paidData.appendChild(paidRow); // Añadir a la tabla de pagados
+
+    // También agregar a la lista de clientes
+    const clientRow = paidRow.cloneNode(true);
+    clientListData.appendChild(clientRow); // Añadir a la lista de clientes
+
+    // Eliminar la fila de pendientes
+    const rows = document.querySelectorAll('#pending-data tr');
+    rows.forEach(row => {
+        const cell = row.querySelector('.circle-number');
+        if (cell && cell.innerText === number) {
+            row.remove(); // Remover la fila de pendiente
+        }
+    });
+}
+
+// Reemplaza la llamada al botón "Pagó" en la tabla de "Pendientes"
+function markPending(number, name, phone) {
+    const pendingRow = document.createElement('tr');
+    pendingRow.innerHTML = 
+        `<td><div class="circle-number">${number}</div></td>
+        <td style="font-weight: bold;">${name}</td>
+        <td style="font-weight: bold;">${phone}</td>
+        <td>
+            <button class="btn btn-success btn-sm" onclick="markPaidFromPending('${number}', '${name}', '${phone}')">Pagó</button>
+            <button class="btn btn-danger btn-sm" onclick="release('${number}')">Liberar</button>
+        </td>`;
+    pendingData.appendChild(pendingRow);
+    removeClientRow(number);
+}
+// Descargar la sección de números disponibles como imagen
+document.getElementById('download-button').onclick = () => {
+    html2canvas(document.getElementById('available')).then(canvas => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'numeros_disponibles.png';
+        link.click();
+    });
+};
+
+
+
+
+    </script>
+</body>
+</html>
