@@ -144,6 +144,12 @@ table {
     margin-top: 20px;
 }
 
+.left, .right {
+            width: 100%; 
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;/* Ajusta el ancho según necesites */
+        }
 
 
 
@@ -193,7 +199,15 @@ table {
         </div>
 
         <div id="available" class="section" style="display: none;">
-            <h1 class="mb-4 text-center">Números Disponibles</h1>
+            <h1 class="mb-4 text-center">🔢Números Disponibles🔢</h1>
+            <div class="d-flex justify-content-between">
+                <h5><img src="imagen/nequi-logo.png" alt="" style="width: 60px;">3103509843</h5>
+                <h5><img src="imagen/daviplata-logo.png" alt="" style="width: 50px;">3103509843</h5>
+            </div>
+
+        
+           
+          
             <button id="download-button" class="btn btn-custom mb-3">Descargar como Imagen</button>
             <div id="number-list-available" class="d-flex flex-wrap justify-content-center"></div>
         </div>
