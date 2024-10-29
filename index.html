@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<<<<<<< HEAD
+=======
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+>>>>>>> f01dae1 (1)
 
 
 
@@ -140,13 +145,9 @@ table {
 }
 
 
-@media (max-width: 768px) {
-    .number {
-        font-size: 1rem; /* Ajustar tamaño de fuente para pantallas pequeñas */
-        width: 40px;
-        height: 40px;
-    }
-}
+
+
+
 
 
     </style>
@@ -268,6 +269,44 @@ table {
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+   <!-- Modal para enviar mensaje por WhatsApp -->
+<div class="modal fade" id="whatsappModal" tabindex="-1" role="dialog" aria-labelledby="whatsappModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-dark text-white"> <!-- Fondo oscuro y texto blanco -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="whatsappModalLabel">Enviar mensaje por WhatsApp</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="whatsappMessage" rows="4" class="form-control bg-secondary text-white" placeholder="Escribe tu mensaje aquí..."></textarea> <!-- Fondo gris oscuro y texto blanco -->
+                <input type="hidden" id="whatsappNumber" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="sendWhatsAppButton">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Tu contenido aquí -->
+        </div>
+        <div class="col-md-6">
+            <!-- Más contenido aquí -->
+        </div>
+    </div>
+</div>
+
+
+
+>>>>>>> f01dae1 (1)
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -646,6 +685,54 @@ document.getElementById('download-button').onclick = () => {
     });
 };
 
+function markPending(number, name, phone) {
+    const pendingRow = document.createElement('tr');
+    pendingRow.innerHTML = `
+        <td><div class="circle-number">${number}</div></td>
+        <td style="font-weight: bold;">${name}</td>
+        <td style="font-weight: bold;">${phone}</td>
+        <td>
+            <button class="btn btn-success btn-sm" onclick="markPaidFromPending('${number}', '${name}', '${phone}')">Pagó</button>
+            <button class="btn btn-danger btn-sm" onclick="release('${number}')">Liberar</button>
+            <button class="btn btn-info btn-sm" onclick="openWhatsAppModal('${phone}')">Enviar WhatsApp</button>
+        </td>`;
+    pendingData.appendChild(pendingRow);
+    removeClientRow(number);
+}
+
+
+function openWhatsAppModal(phone) {
+    document.getElementById('whatsappNumber').value = phone; // Guardar el número de teléfono en un campo oculto
+    $('#whatsappModal').modal('show'); // Mostrar el modal
+}
+
+
+document.getElementById('sendWhatsAppButton').onclick = () => {
+    const message = document.getElementById('whatsappMessage').value;
+    const phone = document.getElementById('whatsappNumber').value;
+
+    if (message && phone) {
+        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank'); // Abrir WhatsApp en una nueva pestaña
+        $('#whatsappModal').modal('hide'); // Cerrar el modal
+        document.getElementById('whatsappMessage').value = ''; // Limpiar el mensaje
+    } else {
+        alert('Por favor, escribe un mensaje y verifica el número de teléfono.');
+    }
+};
+document.getElementById('download-button').onclick = () => {
+    const section = document.getElementById('numbers'); // Cambia 'numbers' por el ID de la sección que deseas capturar
+    html2canvas(section).then(canvas => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'seccion.png'; // Nombre del archivo
+        link.click();
+    });
+};
+
+
+
+(1)
 
 
 
