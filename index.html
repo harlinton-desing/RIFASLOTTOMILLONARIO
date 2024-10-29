@@ -179,7 +179,7 @@ table {
         </div>
 
         <div id="main" class="section">
-            <h1 class="mb-4 text-center">💲LOTTO MILLONARIO💲</h1>
+            <h1 class="mb-4 text-center">💲LOTTO➖MILLONARIO💲</h1>
             <p class="text-center">Haz clic en un número para seleccionarlo</p>
             <div id="number-list" class="d-flex flex-wrap justify-content-center"></div>
             <button id="reset-button" class="btn btn-custom mt-4">Reiniciar Todo</button>
@@ -354,13 +354,13 @@ table {
             const newRow = document.createElement('tr');
             newRow.innerHTML = 
                 `<td><div class="circle-number">${number}</div></td>
-                 <td style="font-weight: bold;">${name.toUpperCase()}</td>
-                 <td style="font-weight: bold;">${phone}</td>
-                 <td>Pendiente</td>
-                 <td>
-                     <button class="btn btn-success btn-sm" onclick="markPaid('${number}', '${name}', '${phone}')">Pagó</button>
-                     <button class="btn btn-warning btn-sm" onclick="markPending('${number}', '${name}', '${phone}')">Debe</button>
-                 </td>`;
+                <td style="font-weight: bold;">${name.toUpperCase()}</td>
+                <td style="font-weight: bold;">${phone}</td>
+                <td>Pendiente</td>
+                <td>
+                <button class="btn btn-success btn-sm" onclick="markPaid('${number}', '${name}', '${phone}')">Pagó</button>
+                <button class="btn btn-warning btn-sm" onclick="markPending('${number}', '${name}', '${phone}')">Debe</button>
+                </td>`;
             document.getElementById('client-data').appendChild(newRow);
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
@@ -374,8 +374,8 @@ table {
         const paidRow = document.createElement('tr');
         paidRow.innerHTML = 
             `<td><div class="circle-number">${number}</div></td>
-             <td style="font-weight: bold;">${name}</td>
-             <td style="font-weight: bold;">${phone}</td>`;
+            <td style="font-weight: bold;">${name}</td>
+            <td style="font-weight: bold;">${phone}</td>`;
         paidData.appendChild(paidRow);
         clientListData.appendChild(paidRow.cloneNode(true));
         removeClientRow(number);
@@ -386,12 +386,12 @@ table {
         const pendingRow = document.createElement('tr');
         pendingRow.innerHTML = 
             `<td><div class="circle-number">${number}</div></td>
-             <td style="font-weight: bold;">${name}</td>
-             <td style="font-weight: bold;">${phone}</td>
-             <td>
-                 <button class="btn btn-success btn-sm" onclick="markPaidFromPending('${number}', '${name}', '${phone}')">Pagó</button>
-                 <button class="btn btn-danger btn-sm" onclick="release('${number}')">Liberar</button>
-             </td>`;
+            <td style="font-weight: bold;">${name}</td>
+            <td style="font-weight: bold;">${phone}</td>
+            <td>
+            <button class="btn btn-success btn-sm" onclick="markPaidFromPending('${number}', '${name}', '${phone}')">Pagó</button>
+            <button class="btn btn-danger btn-sm" onclick="release('${number}')">Liberar</button>
+            </td>`;
         pendingData.appendChild(pendingRow);
         removeClientRow(number);
     }
