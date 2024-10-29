@@ -694,7 +694,7 @@ document.getElementById('download-button').onclick = () => {
     html2canvas(document.getElementById('available')).then(canvas => {
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
-        link.download = 'numeros_disponibles.png';
+        link.download = 'números_disponibles.png';
         link.click();
     });
 };
@@ -716,20 +716,20 @@ function markPending(number, name, phone) {
 
 
 function openWhatsAppModal(phone) {
-    document.getElementById('whatsappNumber').value = phone; // Guardar el número de teléfono en un campo oculto
-    $('#whatsappModal').modal('show'); // Mostrar el modal
+    document.getElementById('WhatsAppNumber').value = phone; // Guardar el número de teléfono en un campo oculto
+    $('#WhatsAppModal').modal('show'); // Mostrar el modal
 }
 
 
 document.getElementById('sendWhatsAppButton').onclick = () => {
-    const message = document.getElementById('whatsappMessage').value;
-    const phone = document.getElementById('whatsappNumber').value;
+    const message = document.getElementById('WhatsAppMessage').value;
+    const phone = document.getElementById('WhatsAppNumber').value;
 
     if (message && phone) {
-        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank'); // Abrir WhatsApp en una nueva pestaña
-        $('#whatsappModal').modal('hide'); // Cerrar el modal
-        document.getElementById('whatsappMessage').value = ''; // Limpiar el mensaje
+        const WhatsAppUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(WhatsAppUrl, '_blank'); // Abrir WhatsApp en una nueva pestaña
+        $('#WhatsAppModal').modal('hide'); // Cerrar el modal
+        document.getElementById('WhatsAppMessage').value = ''; // Limpiar el mensaje
     } else {
         alert('Por favor, escribe un mensaje y verifica el número de teléfono.');
     }
@@ -739,7 +739,7 @@ document.getElementById('download-button').onclick = () => {
     html2canvas(section).then(canvas => {
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
-        link.download = 'seccion.png'; // Nombre del archivo
+        link.download = 'sección.png'; // Nombre del archivo
         link.click();
     });
 };
